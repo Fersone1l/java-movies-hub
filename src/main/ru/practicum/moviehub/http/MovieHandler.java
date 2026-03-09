@@ -11,11 +11,8 @@ import java.util.Optional;
 
 public class MovieHandler extends BaseHttpHandler {
 
-    private final MoviesStore store;
-    private final Gson gson = new Gson();
-
     public MovieHandler(MoviesStore store) {
-        this.store = store;
+        super(store);
     }
 
     @Override

@@ -15,8 +15,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MoviesApiTest {
     private static final String BASE = "http://localhost:8080";
@@ -155,5 +154,49 @@ public class MoviesApiTest {
 
         HttpResponse<String> resp = client.send(delete, HttpResponse.BodyHandlers.ofString());
         assertEquals(204, resp.statusCode());
+    }
+
+    @Test
+    void getMoviesByYear_whenExists_returnsFilteredMovies() throws Exception {
+        String json1 = "{ \"title\": \"Movie 1999\", \"year\": 1999 }";
+        String json2 = "{ \"title\": \"Movie 2010\", \"year\": 2010 }";
+
+        HttpRequest post1 = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies"))
+                .header("Content-Type", "application/json; charset=UTF-8")
+                .POST(HttpRequest.BodyPublishers.ofString(json1))
+                .build();
+
+        HttpRequest post2 = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies"))
+                .header("Content-Type", "application/json; charset=UTF-8")
+                .POST(HttpRequest.BodyPublishers.ofString(json2))
+                .build();
+
+        client.send(post1, HttpResponse.BodyHandlers.ofString());
+        client.send(post2, HttpResponse.BodyHandlers.ofString());
+
+        HttpRequest get = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies?year=2010"))
+                .GET()
+                .build();
+
+        HttpResponse<String> resp = client.send(get, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, resp.statusCode());
+        assertTrue(resp.body().contains("Movie 2010"));
+        assertFalse(resp.body().contains("Movie 1999"));
+    }
+
+    @Test
+    void getMoviesByYear_whenInvalidYear_returns400() throws Exception {
+        HttpRequest get = HttpRequest.newBuilder()
+                .uri(URI.create(BASE + "/movies?year=acbd"))
+                .GET()
+                .build();
+
+        HttpResponse<String> resp = client.send(get, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(400, resp.statusCode());
+        assertTrue(resp.body().contains("\"Некорректный параметр запроса — \\u0027year\\u0027\""));
     }
 }

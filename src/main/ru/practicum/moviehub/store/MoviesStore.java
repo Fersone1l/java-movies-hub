@@ -11,9 +11,10 @@ public class MoviesStore {
     private Integer generatedId = 0;
 
     public Movie save(Movie movie) {
-        if (Objects.nonNull(movie)) {
-            movie.setId(generateId());
+        if (movie == null) {
+            throw new IllegalArgumentException("Movie не может быть null");
         }
+        movie.setId(generateId());
         movies.put(movie.getId(), movie);
         return movie;
     }

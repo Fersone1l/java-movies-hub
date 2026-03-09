@@ -1,6 +1,5 @@
 package ru.practicum.moviehub.http;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import ru.practicum.moviehub.api.ErrorResponse;
@@ -16,11 +15,8 @@ import java.util.List;
 
 public class MoviesHandler extends BaseHttpHandler {
 
-    private final MoviesStore store;
-    private final Gson gson = new Gson();
-
     public MoviesHandler(MoviesStore store) {
-        this.store = store;
+        super(store);
     }
 
     @Override
@@ -108,9 +104,12 @@ public class MoviesHandler extends BaseHttpHandler {
                 return;
             }
 
-            Movie saved = store.save(movie);
-
-            sendJson(ex, 201, gson.toJson(saved));
+            try {
+                Movie saved = store.save(movie);
+                sendJson(ex, 201, gson.toJson(saved));
+            } catch (IllegalArgumentException e) {
+                sendJson(ex, 422, gson.toJson(new ErrorResponse("Ошибка валидации", List.of(e.getMessage()))));
+            }
             return;
         }
 
