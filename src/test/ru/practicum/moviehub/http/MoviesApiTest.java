@@ -71,12 +71,7 @@ public class MoviesApiTest {
 
     @Test
     void postMovie_validMovie_returns201() throws Exception {
-        String json = """
-        {
-          "title": "Inception",
-          "year": 2010
-        }
-        """;
+        String json = "{ \"title\": \"Inception\", \"year\": 2010 }";
 
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(BASE + "/movies"))
@@ -91,12 +86,7 @@ public class MoviesApiTest {
 
     @Test
     void postMovie_invalidMovie_returns422() throws Exception {
-        String json = """
-        {
-          "title": "",
-          "year": 2010
-        }
-        """;
+        String json = "{ \"title\": \"\", \"year\": 2010 }";
 
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(BASE + "/movies"))
@@ -110,12 +100,8 @@ public class MoviesApiTest {
 
     @Test
     void getMovieById_whenExists_returnsMovie() throws Exception {
-        String json = """
-    {
-      "title": "Matrix",
-      "year": 1999
-    }
-    """;
+        String json = "{ \"title\": \"Matrix\", \"year\": 1999 }";
+
 
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE + "/movies"))
@@ -153,12 +139,7 @@ public class MoviesApiTest {
 
     @Test
     void deleteMovie_whenExists_returns204() throws Exception {
-        String json = """
-        {
-          "title": "Avatar",
-          "year": 2009
-        }
-        """;
+        String json = "{ \"title\": \"Avatar\", \"year\": 2009 }";
 
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE + "/movies"))
