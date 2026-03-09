@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.moviehub.api.ErrorResponse;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 
@@ -197,6 +198,9 @@ public class MoviesApiTest {
         HttpResponse<String> resp = client.send(get, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(400, resp.statusCode());
-        assertTrue(resp.body().contains("\"Некорректный параметр запроса — \\u0027year\\u0027\""));
+
+        ErrorResponse error = new Gson().fromJson(resp.body(), ErrorResponse.class);
+        assertEquals("Некорректный параметр запроса — 'year'", error.getError());
     }
+
 }
